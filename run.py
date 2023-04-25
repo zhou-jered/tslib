@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # basic config
     parser.add_argument('--task_name', type=str, required=True, default='long_term_forecast',
-                        help='task name, options:[long_term_forecast, short_term_forecast, imputation, classification, anomaly_detection]')
+                       help='task name, options:[long_term_forecast, short_term_forecast, imputation, classification, anomaly_detection]')
     parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
     parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
     parser.add_argument('--model', type=str, required=True, default='Autoformer',
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     # GPU
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu')
-    parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
+    parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=True)
     parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
 
     # de-stationary projector params

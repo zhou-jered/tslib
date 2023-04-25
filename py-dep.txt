@@ -1,0 +1,11 @@
+./bin/pip3 install -r requirements.txt
+./bin/pip3 install torch
+./bin/pip3 install numpy
+./bin/pip3 install pandas
+./bin/pip3 install scikit-learn
+./bin/pip3 install patool
+./bin/pip3 install tqdm
+./bin/pip3 install sktime
+
+
+

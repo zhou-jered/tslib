@@ -234,6 +234,7 @@ class Dataset_Custom(Dataset):
         cols.remove(self.target)
         cols.remove('date')
         df_raw = df_raw[['date'] + cols + [self.target]]
+
         num_train = int(len(df_raw) * 0.7)
         num_test = int(len(df_raw) * 0.2)
         num_vali = len(df_raw) - num_train - num_test
@@ -255,6 +256,7 @@ class Dataset_Custom(Dataset):
         else:
             data = df_data.values
 
+        print(f"Reading custom {self.data_path} shape:{df_raw.shape}")
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)
         if self.timeenc == 0:
@@ -289,6 +291,20 @@ class Dataset_Custom(Dataset):
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
+    def last_insample_window(self):
+            """
+            The last window of insample size of all timeseries.
+            This function does not support batching and does not reshuffle timeseries.
+
+            :return: Last insample window of all timeseries. Shape "timeseries, insample size"
+            """
+            insample = np.zeros((len(self.timeseries), self.seq_len))
+            insample_mask = np.zeros((len(self.timeseries), self.seq_len))
+            for i, ts in enumerate(self.timeseries):
+                ts_last_window = ts[-self.seq_len:]
+                insample[i, -len(ts):] = ts_last_window
+                insample_mask[i, -len(ts):] = 1.0
+            return insample, insample_mask
 
 
 class Dataset_M4(Dataset):

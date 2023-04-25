@@ -10,6 +10,7 @@ python -u run.py \
   --model_id ECL_96_96 \
   --model $model_name \
   --data custom \
+  --train_epochs 3 \
   --features M \
   --seq_len 96 \
   --label_len 48 \

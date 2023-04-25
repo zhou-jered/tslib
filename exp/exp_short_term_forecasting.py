@@ -21,11 +21,11 @@ class Exp_Short_Term_Forecast(Exp_Basic):
         super(Exp_Short_Term_Forecast, self).__init__(args)
 
     def _build_model(self):
-        if self.args.data == 'm4':
-            self.args.pred_len = M4Meta.horizons_map[self.args.seasonal_patterns]  # Up to M4 config
-            self.args.seq_len = 2 * self.args.pred_len  # input_len = 2*pred_len
-            self.args.label_len = self.args.pred_len
-            self.args.frequency_map = M4Meta.frequency_map[self.args.seasonal_patterns]
+        # if self.args.data == 'm4':
+        self.args.pred_len = M4Meta.horizons_map[self.args.seasonal_patterns]  # Up to M4 config
+        self.args.seq_len = 2 * self.args.pred_len  # input_len = 2*pred_len
+        self.args.label_len = self.args.pred_len
+        self.args.frequency_map = M4Meta.frequency_map[self.args.seasonal_patterns]
         model = self.model_dict[self.args.model].Model(self.args).float()
 
         if self.args.use_multi_gpu and self.args.use_gpu:
@@ -74,6 +74,7 @@ class Exp_Short_Term_Forecast(Exp_Basic):
             self.model.train()
             epoch_time = time.time()
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
+                # print(f"bx:{batch_x.shape}, by:{batch_y.shape}, bxm:{batch_x_mark.shape}, bym:{batch_y_mark.shape}")
                 iter_count += 1
                 model_optim.zero_grad()
                 batch_x = batch_x.float().to(self.device)
@@ -92,12 +93,15 @@ class Exp_Short_Term_Forecast(Exp_Basic):
                 batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
 
                 batch_y_mark = batch_y_mark[:, -self.args.pred_len:, f_dim:].to(self.device)
+                # print(f"batch_X:{batch_x.shape} fre_map:{self.args.frequency_map}")
+                # print(f"outputs:{outputs.shape} ")
+                # print(f"batch_y:{batch_y.shape} batch_y_mark:{batch_y_mark.shape}")
                 loss_value = criterion(batch_x, self.args.frequency_map, outputs, batch_y, batch_y_mark)
                 loss_sharpness = mse((outputs[:, 1:, :] - outputs[:, :-1, :]), (batch_y[:, 1:, :] - batch_y[:, :-1, :]))
                 loss = loss_value  # + loss_sharpness * 1e-5
                 train_loss.append(loss.item())
 
-                if (i + 1) % 100 == 0:
+                if (i + 1) % 10 == 0:
                     print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
                     speed = (time.time() - time_now) / iter_count
                     left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)

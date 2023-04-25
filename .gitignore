@@ -135,3 +135,10 @@ dmypy.json
 /temp.sh
 
 .idea
+
+.DS_Store
+bin
+checkpoints
+dataset
+test_results/
+*.ipynb

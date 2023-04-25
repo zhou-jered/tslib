@@ -77,9 +77,13 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         return total_loss
 
     def train(self, setting):
+        print("start train")
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
         test_data, test_loader = self._get_data(flag='test')
+    
+
+        print("get train val test values")
 
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):
@@ -96,6 +100,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
 
+        print("Start epoch")
         for epoch in range(self.args.train_epochs):
             iter_count = 0
             train_loss = []
@@ -103,11 +108,17 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             self.model.train()
             epoch_time = time.time()
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
+                print(f"i:{i}")
+                print(f"bx:{batch_x.shape}")
+                print(f"by:{batch_y.shape}")
+                print(f"bx_mark:{batch_x_mark.shape}")
+                print(f"by_mark:{batch_y_mark.shape}")
                 iter_count += 1
                 model_optim.zero_grad()
                 batch_x = batch_x.float().to(self.device)
 
                 batch_y = batch_y.float().to(self.device)
+                print("to device:"+str(self.device))
                 batch_x_mark = batch_x_mark.float().to(self.device)
                 batch_y_mark = batch_y_mark.float().to(self.device)
 
